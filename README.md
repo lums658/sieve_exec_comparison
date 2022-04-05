@@ -1,4 +1,4 @@
-# sieve_exec_comparison
+# Comparing parallel asynchronous frameworks with prime sieve
 
 This repo contains multiple asynchronous implementations of sieve of Eratosthenes. 
 ## Block Sieve
@@ -49,21 +49,23 @@ The original set of $\sqrt{n}$ primes is stored at loccation 0.
 
 A set of $n/B$ parallel task chains is launched to carry out the computation.
                                                                                                                                    
-## Implementations
+## Frameworks
 
 The various implementations included here are based on the same block algorithm and use essentially the same functions.  They differ, however, in how concurrency and parallelism are effected.
-- async: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
-- cc: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
-- direct: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
-- p2300: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.
-- tbb: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
+- **async**: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
+- **cc**: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
+- **direct**: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
+- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.
+- **tbb**: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
+
+The associated driver programs are named `sieve_<framework>_fun.cpp`.  (The "fun" is due not only to this being fun but because the driver is based on composing free functions together.  There are also "obj" variants, based on function objects, not yet copied here.)
 
 
 ## Prerequisites
 
-### concurrencpp 
+### concurrencpp and std::execution
 
-Pull in the concurrencpp and wg21_p2300_std_execution submodules
+Pull in the concurrencpp and wg21_p2300_std_execution submodules with git
 
 ```bash
   $ git submodule update --init --recursive
@@ -88,6 +90,10 @@ Build the library:
 
 That should create a library `libconcurrencpp.a` in the `concurrencpp/build` subdirectory.
 
+### `std::execution`
+
+`std::execution` is header-only so it should "just work".  Double check Makefile macros if things are not found (see below).
+
 ### TBB
 
 You will need a recent version of Intel Threading Building Blocks -- oneTBB.  The most
@@ -96,10 +102,10 @@ straightforward way to access that is to install it with the appropriate package
 
 ### Makefile
 
-There are a few macros in the Makefile that you will need to set.
+There are a few macros in the Makefile that you may need to set.
 
 `P2300` should point to the top level of the wg21_p2300_std_execution repository.
-This will be pulled in as a submodule, and the Makefile should point to it.  But if you want to use a different location, you can update that.
+This will be pulled in as a submodule, and the Makefile should already point to it.  But if you want to use a different location, you can update that.
 
 `TBBROOT` should point to the top level of your TBB installation.  On recent Linux this may be
 
@@ -114,6 +120,8 @@ TBBROOT		:= $(HOMEBREW)/tbb/2021.5.0
 ```
 
 where `HOMEBREW` may be one of `/opt/homebrew` or `/usr/local/Cellar`.
+
+(I realize that cmake can deal with much of this -- it's on the to-do list.)
 
 
 ### Compiler
@@ -138,14 +146,15 @@ This will build, run, and plot the benchmarks.  Assuming everything will build a
 
 The following results were obtained on a Mac Mini M1, 2020 with 8 cores (4 performance, 4 efficiency).  The programs were compiled with Apple Clang version 13.0.0 for arm64-apple-darwin20.6.0.  Optimization flags used were "-Ofast -mcpu=apple-m1".  The TBB used was oneTBB (2021.5.0).  The concurrencpp version was v.0.1.4.  The std_execution version was P2532R0-46-gd40ce5e.
 
+
 ### Primes less than 100'000'000
 
 ![Primes in First 100000000 Numbers](img/bar_plot__100000000_.png)
 
-Shown from left to right are execution times for sieve implementations using async, concurrencpp, direct function calls, P2300 std::execution, and TBB.  These results were obtained with a block size of 100k.
+Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.
 
 ### Primes less than 1'000'000'000
 
 ![Primes in First 1000000000 Numbers](img/bar_plot__1000000000_.png)
 
-Shown from left to right are execution times for sieve implementations using async, concurrencpp, direct function calls, P2300 std::execution, and TBB.  These results were obtained with a block size of 100k.
+Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.
