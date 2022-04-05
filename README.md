@@ -171,10 +171,10 @@ The following results were obtained on a Mac Mini M1, 2020 with 8 cores (4 perfo
 
 ![Primes in First 100000000 Numbers](img/bar_plot__100000000_.png)
 
-Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.
+Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
 
 ### Primes less than 1'000'000'000
 
 ![Primes in First 1000000000 Numbers](img/bar_plot__1000000000_.png)
 
-Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.
+Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
