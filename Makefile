@@ -1,7 +1,4 @@
 #
-# This file is part of the course materials for CSE P 524 at the University of Washington,
-# Winter 2022
-#
 # Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
 # https://creativecommons.org/licenses/by-nc-sa/4.0/
 #
