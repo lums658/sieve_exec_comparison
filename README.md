@@ -142,9 +142,11 @@ The executables are invoked as
 ```bash
   $ ./sieve_<framework>_fun.exe [problem_size] [block_size]
 ```
-where `problem_size` is an optional argument specifying the upper limit of numbers to search for primes and `block_size` is how many thousands of numbers to process together in a block.  Default `problem_size` is `10'000'000` and default `block_size` is `100`.  
+where `problem_size` is an optional argument specifying the upper limit of numbers to search for primes and `block_size` is how many thousands of numbers to process together in a block.  Default `problem_size` is `100'000'000` and default `block_size` is `100`.  
 
-(In initial benchmarks a `block_size` of `100` or `1'000` seem to offer the best performance.)
+(In initial benchmarks a `block_size` of `100` seems to offer the best performance.)
+
+The program will run the sieve program twice: once using a bitmap of `std::vector<bool>` and once using a bitmap of `std::vector<uint8_t>`.  (This remains for historical reasons to compare efficiency of using `bool` for `uint8_t` for bitmaps.)
 
 ## Benchmarking
 
