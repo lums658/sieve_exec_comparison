@@ -30,11 +30,11 @@
  * Demo program for concurrencpp system: sieve of Eratosthenes,
  * free function explicit coroutine version.
  *
- * The functions that are composed for the sieve are defined in 
+ * The functions that are composed for the sieve are defined in
  * sieve_fun.hpp.
  *
- * The functions in this implementation are chained together by essentially 
- * calling each other in a chain, but with co_await and co_return inserted 
+ * The functions in this implementation are chained together by essentially
+ * calling each other in a chain, but with co_await and co_return inserted
  * in that composition.  Read-only state variables are also passed in to
  * the functions that need them.  See the definition of "task" below.
  */
@@ -73,15 +73,18 @@ auto sieve_cc_block(size_t n, size_t block_size) {
    */
   input_body gen{};
   auto task = [&](cc::executor_tag) -> cc::result<void> {
-    co_return output_body(co_await [&]() -> cc::result<prime_info> {
-	co_return sieve_to_primes_part<bool_t>(co_await [&]() -> cc::result<part_info<bool_t>> {
-            co_return range_sieve<bool_t>(co_await [&]() -> cc::result<part_info<bool_t>> {
-		co_return gen_range<bool_t>(co_await [&]() -> cc::result<size_t> { 
-		    co_return gen();
-		  }(), block_size, sqrt_n, n);
-	      }(), base_primes);
+    co_return output_body(
+        co_await [&]() -> cc::result<prime_info> {
+          co_return sieve_to_primes_part<bool_t>(co_await [&]() -> cc::result<part_info<bool_t>> {
+            co_return range_sieve<bool_t>(
+                co_await [&]() -> cc::result<part_info<bool_t>> {
+                  co_return gen_range<bool_t>(
+                      co_await [&]() -> cc::result<size_t> { co_return gen(); }(), block_size, sqrt_n, n);
+                }(),
+                base_primes);
           }());
-      }(), prime_list);
+        }(),
+        prime_list);
   };
 
   cc::runtime runtime;

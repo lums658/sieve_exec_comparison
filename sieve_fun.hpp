@@ -27,18 +27,18 @@
  *
  * @section DESCRIPTION
  *
- * Demo program sieve of Eratosthenes, function components for block 
+ * Demo program sieve of Eratosthenes, function components for block
  * (and parallelizable) implementation.
  *
- * The block sieve algorithm begins by sequentially finding all the primes in 
- * [2, sqrt(n)).  Using that initial set of primes, the algorithm finds primes 
- * in each block of numbers delimited by 
+ * The block sieve algorithm begins by sequentially finding all the primes in
+ * [2, sqrt(n)).  Using that initial set of primes, the algorithm finds primes
+ * in each block of numbers delimited by
  *
  *       [sqrt(n) + p*block_size, sqrt(n) + (p+1)*block_size)
  *
  *  for p in [0, n/blocksize).
  *
- * This file provides a decomposition of that computation into the following 
+ * This file provides a decomposition of that computation into the following
  * five tasks:
  *   input_body() generates p, a sequence of integers, starting at 0
  *   gen_range() creates a bitmap for indicating primality (or not)
@@ -52,7 +52,7 @@
  *   A set of n/block_size parallel task chains is launched to carry
  *     out the computation.
  *
- * These functions take regular values as input parameters and return regular 
+ * These functions take regular values as input parameters and return regular
  * values. They can be composed together to produce the sieve algorithm
  * described above.
  */
@@ -69,7 +69,7 @@
 
 bool debug = false;
 
-/** 
+/**
  * Some convenience type aliases
  */
 template <class bool_t>
@@ -77,15 +77,19 @@ using part_info = std::tuple<size_t, size_t, size_t, std::shared_ptr<std::vector
 using prime_info = std::tuple<size_t, std::shared_ptr<std::vector<size_t>>>;
 
 /**
- * Generate a (thread safe) sequence of integers, starting at 0 
+ * Generate a (thread safe) sequence of integers, starting at 0
  * @return integer, value one greater than previously returned
  */
 class input_body {
   std::atomic<size_t> p{0};
 
  public:
-  input_body() : p{0}{}
-  input_body(const input_body& rhs) : p{rhs.p.load()}{}
+  input_body()
+      : p{0} {
+  }
+  input_body(const input_body& rhs)
+      : p{rhs.p.load()} {
+  }
   size_t operator()() {
     if (debug)
       std::cout << "input_body " << p << std::endl;
@@ -165,4 +169,4 @@ auto output_body(const prime_info& in, std::vector<std::shared_ptr<std::vector<s
   prime_list[p] = primes;
 };
 
-#endif // TILEDB_SIEVE_FUN_HPP
+#endif  // TILEDB_SIEVE_FUN_HPP

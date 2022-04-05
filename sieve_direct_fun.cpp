@@ -30,7 +30,7 @@
  * Demo program for benchmarking async frameworks: sieve of Eratosthenes,
  * free function direct calling version.
  *
- * The functions in this implementation are chained together by essentially 
+ * The functions in this implementation are chained together by essentially
  * calling each other directly in a chain.  See the definition of "task" below.
  */
 
@@ -39,7 +39,6 @@
 #include "sieve.hpp"
 #include "sieve_fun.hpp"
 #include "timer.hpp"
-
 
 /**
  * Main sieve function
@@ -77,10 +76,10 @@ auto sieve_direct_block(size_t n, size_t block_size) {
 			    ), base_primes),), prime_list); };
 
 #else
-  auto task = [&]() { 
+  auto task = [&]() {
     auto a = gen();
     auto b = gen_range<bool_t>(a, block_size, sqrt_n, n);
-    auto c = range_sieve<bool_t>( b, base_primes);
+    auto c = range_sieve<bool_t>(b, base_primes);
     auto d = sieve_to_primes_part<bool_t>(c);
     output_body(d, prime_list);
   };
@@ -104,7 +103,6 @@ auto sieve_direct_block(size_t n, size_t block_size) {
   return prime_list;
 }
 
-
 int main(int argc, char* argv[]) {
   size_t number = 100'000'000;
   size_t block_size = 1'000;
@@ -119,8 +117,10 @@ int main(int argc, char* argv[]) {
   auto using_bool_direct_block = timer_2(sieve_direct_block<bool>, number, block_size * 1024);
   auto using_char_direct_block = timer_2(sieve_direct_block<char>, number, block_size * 1024);
 
-  std::cout << "Time using bool direct block: " << duration_cast<std::chrono::milliseconds>(using_bool_direct_block).count() << "\n";
-  std::cout << "Time using char direct block: " << duration_cast<std::chrono::milliseconds>(using_char_direct_block).count() << "\n";
+  std::cout << "Time using bool direct block: " << duration_cast<std::chrono::milliseconds>(using_bool_direct_block).count()
+            << "\n";
+  std::cout << "Time using char direct block: " << duration_cast<std::chrono::milliseconds>(using_char_direct_block).count()
+            << "\n";
 
   return 0;
 }

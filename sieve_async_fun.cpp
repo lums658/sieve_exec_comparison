@@ -30,22 +30,20 @@
  * Demo program for benchmarking async frameworks: sieve of Eratosthenes,
  * free function explicit async/future version.
  *
- * The functions that are composed for the sieve are defined in 
+ * The functions that are composed for the sieve are defined in
  * sieve_fun.hpp.
  *
  * The functions are chained together by essentially calling
- * each other in a chain, but with async and future::get inserted in 
+ * each other in a chain, but with async and future::get inserted in
  * that composition.  Read-only state variables are also passed in to
  * the functions that need them.  See the definition of "task" below.
  *
  */
 
-
 #include <future>
 #include "sieve.hpp"
 #include "sieve_fun.hpp"
 #include "timer.hpp"
-
 
 /**
  * Main sieve function
@@ -74,15 +72,27 @@ auto sieve_async_block(size_t n, size_t block_size) {
    */
 #if 1
   auto task = [&]() {
-    return std::async(std::launch::async, output_body,
-		      std::async(std::launch::async, sieve_to_primes_part<bool_t>,
-				 std::async(std::launch::async, range_sieve<bool_t>,
-					    std::async(std::launch::async, gen_range<bool_t>,
-						       std::async(std::launch::async, std::ref(gen))
-						       .get(), block_size, sqrt_n, n)
-					    .get(), std::cref(base_primes))
-				 .get())
-		      .get(), std::ref(prime_list));
+    return std::async(
+        std::launch::async,
+        output_body,
+        std::async(
+            std::launch::async,
+            sieve_to_primes_part<bool_t>,
+            std::async(
+                std::launch::async,
+                range_sieve<bool_t>,
+                std::async(
+                    std::launch::async,
+                    gen_range<bool_t>,
+                    std::async(std::launch::async, std::ref(gen)).get(),
+                    block_size,
+                    sqrt_n,
+                    n)
+                    .get(),
+                std::cref(base_primes))
+                .get())
+            .get(),
+        std::ref(prime_list));
   };
 #else
 #if 0
@@ -99,8 +109,8 @@ auto sieve_async_block(size_t n, size_t block_size) {
     auto a = std::async(std::launch::async, std::ref(gen));
     auto b = std::async(std::launch::async, [&]() { return gen_range<bool_t>(a.get(), block_size, sqrt_n, n); });
     auto c = std::async(std::launch::async, [&]() { return range_sieve<bool_t>(b.get(), std::cref(base_primes)); });
-    auto d = std::async(std::launch::async, [&]() { return sieve_to_primes_part<bool_t>( c.get()); });
-    
+    auto d = std::async(std::launch::async, [&]() { return sieve_to_primes_part<bool_t>(c.get()); });
+
     return std::async(std::launch::async, [&]() { output_body(d.get(), std::ref(prime_list)); });
   };
 #endif
@@ -122,7 +132,6 @@ auto sieve_async_block(size_t n, size_t block_size) {
 
   return prime_list;
 }
-
 
 int main(int argc, char* argv[]) {
   size_t number = 100'000'000;

@@ -81,4 +81,4 @@ auto sieve_seq(size_t n) {
   return sieve;
 }
 
-#endif // TILEDB_SIEVE_HPP
+#endif  // TILEDB_SIEVE_HPP

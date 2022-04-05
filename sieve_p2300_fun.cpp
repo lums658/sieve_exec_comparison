@@ -33,8 +33,8 @@
 
 #include <atomic>
 #include <cmath>
-#include <functional>
 #include <execution.hpp>
+#include <functional>
 
 #include "../examples/schedulers/static_thread_pool.hpp"
 
@@ -46,7 +46,6 @@ namespace ex = std::execution;
 #include "timer.hpp"
 
 using namespace std::placeholders;
-
 
 /**
  * @brief Generate primes from 2 to n using sieve of Eratosthenes.
@@ -66,38 +65,39 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
   std::vector<std::shared_ptr<std::vector<size_t>>> prime_list(n / block_size + 2);
   prime_list[0] = std::make_shared<std::vector<size_t>>(base_primes);
 
-
-  example::static_thread_pool pool{ std::thread::hardware_concurrency() };
+  example::static_thread_pool pool{std::thread::hardware_concurrency()};
 
   /**
    * Build pipeline
    */
   auto bod = input_body{};
   auto l = [&bod]() mutable { return bod(); };
-  auto A = ex::schedule(pool.get_scheduler()) |
-    ex::then(std::move(l)) ;
 
-  auto B = A |
-    ex::then( std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n) ) |
-    ex::then( std::bind(range_sieve<bool_t>, _1, cref(base_primes)) ) |
-    ex::then( sieve_to_primes_part<bool_t> ) |
-    ex::then( std::bind(output_body, _1, ref(prime_list)) );
+  auto async_worker = [&]() {
+    return ex::transfer_just(pool.get_scheduler(), l()) | ex::then(std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n)) |
+           ex::then(std::bind(range_sieve<bool_t>, _1, cref(base_primes))) | ex::then(sieve_to_primes_part<bool_t>) |
+           ex::then(std::bind(output_body, _1, ref(prime_list)));
+  };
 
-  std::vector<decltype(ex::transfer_when_all(pool.get_scheduler(), B ))> d;
+  std::vector<decltype(async_worker())> D;
   for (size_t i = 0; i < n / block_size + 1; ++i) {
-    d.emplace_back(ex::transfer_when_all(pool.get_scheduler(), B ));
+    D.emplace_back(async_worker());
   }
-  for (auto&&D:d) {
-    std::this_thread::sync_wait(std::move(D));
+
+  std::cout << "+++" << std::endl;
+
+  for (auto&& d : D) {
+    std::this_thread::sync_wait(std::move(d));
   }
 
   return prime_list;
 }
 
-
 int main(int argc, char* argv[]) {
   size_t number = 100'000'000;
   size_t block_size = 1'000;
+
+  debug = true;
 
   if (argc >= 2) {
     number = std::stol(argv[1]);

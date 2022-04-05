@@ -45,13 +45,13 @@ auto timer_1(F f, size_t max, Args&&... args) {
 
   auto a = sieve_to_primes(s);
   std::cout << a.size() << ": ";
-  std::cout << a[0] << ", " << a[1] << " ... " << a[a.size()-2] << ", " << a[a.size()-1] << std::endl;
+  std::cout << a[0] << ", " << a[1] << " ... " << a[a.size() - 2] << ", " << a[a.size() - 1] << std::endl;
 
   return stop - start;
 }
 
 template <class F, class... Args>
-auto timer_2(F f, size_t max, Args && ... args) {
+auto timer_2(F f, size_t max, Args&&... args) {
   auto start = std::chrono::high_resolution_clock::now();
   auto s = f(max, std::forward<Args>(args)...);
   auto stop = std::chrono::high_resolution_clock::now();
@@ -67,4 +67,4 @@ auto timer_2(F f, size_t max, Args && ... args) {
   return stop - start;
 }
 
-#endif // TILEDB_TIMER_HPP
+#endif  // TILEDB_TIMER_HPP

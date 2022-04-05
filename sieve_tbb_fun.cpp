@@ -30,7 +30,6 @@
  * Demo program sieve of Eratosthenes, TBB implementation
  */
 
-
 #include <tbb/tbb.h>
 
 #include <chrono>
@@ -45,12 +44,10 @@
 #include "sieve_fun.hpp"
 #include "timer.hpp"
 
-
 using namespace std::placeholders;
 
-
 /**
- * Generate a (thread safe) sequence of integers, starting at 0 
+ * Generate a (thread safe) sequence of integers, starting at 0
  * @return integer, value one greater than previously returned
  */
 class input_body_tbb {
@@ -58,9 +55,12 @@ class input_body_tbb {
   const size_t n_;
   std::atomic<size_t> p{0};
 
-
  public:
-  input_body_tbb(size_t block_size, size_t n) : block_size_{block_size}, n_{n}, p{0}{}
+  input_body_tbb(size_t block_size, size_t n)
+      : block_size_{block_size}
+      , n_{n}
+      , p{0} {
+  }
   size_t operator()(oneapi::tbb::flow_control& fc) {
     if (debug)
       std::cout << "input_body_tbb " << p << std::endl;
@@ -72,10 +72,8 @@ class input_body_tbb {
   }
 };
 
-
 template <class bool_t>
 auto sieve_tbb_block(size_t n, size_t block_size, size_t width) {
-
   size_t sqrt_n = static_cast<size_t>(std::ceil(std::sqrt(n)));
 
   /* Generate base set of sqrt(n) primes to be used for subsequent sieving */
@@ -92,7 +90,8 @@ auto sieve_tbb_block(size_t n, size_t block_size, size_t width) {
 
   tbb::flow::input_node<size_t> inp{g, std::ref(gen)};
   tbb::flow::function_node<size_t, part_info<bool_t>> rng{g, width, std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n)};
-  tbb::flow::function_node<part_info<bool_t>, part_info<bool_t>> fn{g, width, std::bind(range_sieve<bool_t>, _1, std::cref(base_primes))};
+  tbb::flow::function_node<part_info<bool_t>, part_info<bool_t>> fn{
+      g, width, std::bind(range_sieve<bool_t>, _1, std::cref(base_primes))};
   tbb::flow::function_node<part_info<bool_t>, prime_info> flt{g, width, sieve_to_primes_part<bool_t>};
   tbb::flow::function_node<prime_info> outp{g, width, std::bind(output_body, _1, std::ref(prime_list))};
 
@@ -108,12 +107,7 @@ auto sieve_tbb_block(size_t n, size_t block_size, size_t width) {
   return prime_list;
 }
 
-
-
-
-
 int main(int argc, char* argv[]) {
-
   size_t number = 10'000'000;
   size_t block_size = 1'000;
   size_t width = std::thread::hardware_concurrency();
@@ -131,8 +125,6 @@ int main(int argc, char* argv[]) {
   auto using_bool_tbb_block = timer_2(sieve_tbb_block<bool>, number, block_size * 1024, width);
   auto using_char_tbb_block = timer_2(sieve_tbb_block<char>, number, block_size * 1024, width);
 
-  std::cout << "Time using bool tbb block: "
-            << duration_cast<std::chrono::milliseconds>(using_bool_tbb_block).count() << "\n";
-  std::cout << "Time using char tbb block: "
-            << duration_cast<std::chrono::milliseconds>(using_char_tbb_block).count() << "\n";
+  std::cout << "Time using bool tbb block: " << duration_cast<std::chrono::milliseconds>(using_bool_tbb_block).count() << "\n";
+  std::cout << "Time using char tbb block: " << duration_cast<std::chrono::milliseconds>(using_char_tbb_block).count() << "\n";
 }
