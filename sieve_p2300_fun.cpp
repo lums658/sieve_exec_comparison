@@ -67,24 +67,38 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
 
   example::static_thread_pool pool{std::thread::hardware_concurrency()};
 
+  bool called{false};
+  {
+    ex::sender auto snd = ex::transfer_just(pool.get_scheduler()) 
+                          | ex::then([&] { called = true; });
+    ex::start_detached(std::move(snd));
+  }
+
+
   /**
    * Build pipeline
    */
   auto bod = input_body{};
   auto l = [&bod]() mutable { return bod(); };
+  
+  auto make_snd = [&]() {
 
-  auto async_worker = [&]() {
-    return ex::transfer_just(pool.get_scheduler(), l()) | ex::then(std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n)) |
-           ex::then(std::bind(range_sieve<bool_t>, _1, cref(base_primes))) | ex::then(sieve_to_primes_part<bool_t>) |
-           ex::then(std::bind(output_body, _1, ref(prime_list)));
+    ex::sender auto snd = 
+      ex::transfer_just(pool.get_scheduler()) |
+      ex::then(l) |
+      ex::then(std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n)) |
+      ex::then(std::bind(range_sieve<bool_t>, _1, cref(base_primes))) |
+      ex::then(sieve_to_primes_part<bool_t>) |
+      ex::then(std::bind(output_body, _1, ref(prime_list)));
+    
+    return snd;
   };
 
-  std::vector<decltype(async_worker())> D;
+  // std::execution is lazy so this is completely synchronous
+  std::vector<decltype(make_snd())> D;
   for (size_t i = 0; i < n / block_size + 1; ++i) {
-    D.emplace_back(async_worker());
+    D.emplace_back(make_snd());
   }
-
-  std::cout << "+++" << std::endl;
 
   for (auto&& d : D) {
     std::this_thread::sync_wait(std::move(d));

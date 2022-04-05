@@ -28,7 +28,7 @@ ifeq 'clang' '$(findstring clang, $(CXXVERSION))'
   CXXFAM := clang
 endif
 
-P2300		:= $(HOME)/Contrib/wg21_p2300_std_execution
+P2300		:= ./wg21_p2300_std_execution
 INCLUDES	+= -I$(P2300)/include -I$(P2300)/test -Iconcurrencpp/include
 VPATH		:= concurrencpp
 
