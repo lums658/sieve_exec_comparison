@@ -125,6 +125,7 @@ The concurrencpp library has only been tested with Apple clang, it does not appe
 A jupyter notebook is available in the benchmarks subdirectory
 
 ```bash
+  $ cd benchmarks
   $ jupyter notebook sieve_benchmark.ipynb
 ```
 
