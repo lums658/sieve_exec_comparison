@@ -108,8 +108,8 @@ auto sieve_tbb_block(size_t n, size_t block_size, size_t width) {
 }
 
 int main(int argc, char* argv[]) {
-  size_t number = 10'000'000;
-  size_t block_size = 1'000;
+  size_t number = 100'000'000;
+  size_t block_size = 100;
   size_t width = std::thread::hardware_concurrency();
 
   if (argc >= 2) {

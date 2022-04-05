@@ -128,6 +128,24 @@ where `HOMEBREW` may be one of `/opt/homebrew` or `/usr/local/Cellar`.
 
 The concurrencpp library has only been tested with Apple clang, it does not appear to build with g++ (g++-11 attempted).  The other executables should build with g++-11.
 
+## Building and Running
+
+The suite of executables can be built with
+
+```bash
+  $ make
+```
+This will build all of the `sieve_<framework>_fun.exe`.  
+
+The executables are invoked as
+
+```bash
+  $ ./sieve_<framework>_fun.exe [problem_size] [block_size]
+```
+where `problem_size` is an optional argument specifying the upper limit of numbers to search for primes and `block_size` is how many thousands of numbers to process together in a block.  Default `problem_size` is `10'000'000` and default `block_size` is `100`.  
+
+(In initial benchmarks a `block_size` of `100` or `1'000` seem to offer the best performance.)
+
 ## Benchmarking
 
 A jupyter notebook is available in the benchmarks subdirectory
