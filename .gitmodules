@@ -1,3 +1,6 @@
 [submodule "concurrencpp"]
 	path = concurrencpp
 	url = https://github.com/David-Haim/concurrencpp.git
+[submodule "wg21_p2300_std_execution"]
+	path = wg21_p2300_std_execution
+	url = https://github.com/brycelelbach/wg21_p2300_std_execution.git
