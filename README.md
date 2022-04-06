@@ -55,8 +55,9 @@ The various implementations included here are based on the same block algorithm 
 - **async**: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
 - **cc**: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
 - **direct**: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
-- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.
+- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.  **NB:** The p2300 implementation is evolving rapidly but does not yet have sufficient functionality to support this benchmark.  The sieve implementation is presently informational only (but compare to unifex).
 - **tbb**: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
+- **unifex**: Uses Facebook's `libunifex` for concurrency and parallelism.  Algorithmic steps are chained together with `unifex::then` and `operator|`.
 
 The associated driver programs are named `sieve_<framework>_fun.cpp`.  (The "fun" is due not only to this being fun but because the driver is based on composing free functions together.  There are also "obj" variants, based on function objects, not yet copied here.)
 
@@ -65,7 +66,7 @@ The associated driver programs are named `sieve_<framework>_fun.cpp`.  (The "fun
 
 ### concurrencpp and std::execution
 
-Pull in the concurrencpp and wg21_p2300_std_execution submodules with git
+Pull in the concurrencpp, libunifex, and wg21_p2300_std_execution submodules with git
 
 ```bash
   $ git submodule update --init --recursive
@@ -105,6 +106,9 @@ straightforward way to access that is to install it with the appropriate package
 There are a few macros in the Makefile that you may need to set.
 
 `P2300` should point to the top level of the wg21_p2300_std_execution repository.
+This will be pulled in as a submodule, and the Makefile should already point to it.  But if you want to use a different location, you can update that.
+
+`UNIFEX` should point to the top level of the libunifex repository.
 This will be pulled in as a submodule, and the Makefile should already point to it.  But if you want to use a different location, you can update that.
 
 `TBBROOT` should point to the top level of your TBB installation.  On recent Linux this may be
@@ -171,10 +175,10 @@ The following results were obtained on a Mac Mini M1, 2020 with 8 cores (4 perfo
 
 ![Primes in First 100000000 Numbers](img/bar_plot__100000000_.png)
 
-Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
+Shown from left to right are execution times for sieve implementations using concurrencpp, libunifex, TBB, direct function calls, and std::async.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
 
 ### Primes less than 1'000'000'000
 
 ![Primes in First 1000000000 Numbers](img/bar_plot__1000000000_.png)
 
-Shown from left to right are execution times for sieve implementations using concurrencpp, TBB, direct function calls, std::async, and P2300 std::execution.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
+Shown from left to right are execution times for sieve implementations using concurrencpp, libunifex, TBB, direct function calls, and std::async.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
