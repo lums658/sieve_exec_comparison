@@ -67,13 +67,6 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
 
   example::static_thread_pool pool{std::thread::hardware_concurrency()};
 
-  bool called{false};
-  {
-    ex::sender auto snd = ex::transfer_just(pool.get_scheduler()) 
-                          | ex::then([&] { called = true; });
-    ex::start_detached(std::move(snd));
-  }
-
 
   /**
    * Build pipeline

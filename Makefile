@@ -26,7 +26,8 @@ ifeq 'clang' '$(findstring clang, $(CXXVERSION))'
 endif
 
 P2300		:= ./wg21_p2300_std_execution
-INCLUDES	+= -I$(P2300)/include -I$(P2300)/test -Iconcurrencpp/include
+UNIFEX		:= ./libunifex
+INCLUDES	+= -I$(P2300)/include -I$(P2300)/test -Iconcurrencpp/include -I$(UNIFEX)/include -I$(UNIFEX)/build/include
 VPATH		:= concurrencpp
 
 # Set up arch specific optimization flags
@@ -117,7 +118,7 @@ endif
 OPTS		= -Ofast $(NATIVE) -DNDEBUG
 
 # LIBS		+= -latomic
-LIBS		+= -Lconcurrencpp/build -lconcurrencpp
+LIBS		+= -Lconcurrencpp/build -lconcurrencpp -L$(UNIFEX)/build/source -lunifex
 
 REPORTING   	= -Rpass=.*
 
