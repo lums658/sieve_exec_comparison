@@ -75,9 +75,6 @@ auto sieve_unifex_block(size_t n, size_t block_size) {
   unifex::static_thread_pool pool{std::thread::hardware_concurrency()};
   ex::async_scope scope;
 
-  
-
-
   /**
    * Build pipeline
    */
@@ -97,19 +94,17 @@ auto sieve_unifex_block(size_t n, size_t block_size) {
     return snd;
   };
 
-  std::vector<decltype(make_snd())> D;
+  /* launch tasks on async_scope */
   for (size_t i = 0; i < n / block_size + 1; ++i) {
     scope.spawn_on(pool.get_scheduler(), make_snd());
   }
 
+  /* wait for tasks to finish */
   ex::sync_wait(scope.complete());
-
-  for (auto&& d : D) {
-    ex::sync_wait(std::move(d));
-  }
 
   return prime_list;
 }
+
 
 int main(int argc, char* argv[]) {
   size_t number = 100'000'000;
