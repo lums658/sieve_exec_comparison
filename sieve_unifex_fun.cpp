@@ -1,5 +1,5 @@
 /**
- * @file sieve_p2300_fun.cpp
+ * @file sieve_unifex_fun.cpp
  *
  * @section LICENSE
  *
@@ -27,7 +27,7 @@
  *
  * @section DESCRIPTION
  *
- * Demo program for WG21 p2300 std::execution system: sieve of Eratosthenes,
+ * Demo program for libunifex: Sieve of Eratosthenes,
  * free function version.
  */
 
@@ -36,10 +36,15 @@
 #include <execution.hpp>
 #include <functional>
 
-#include "../examples/schedulers/static_thread_pool.hpp"
 
-using namespace std::execution;
-namespace ex = std::execution;
+#include <unifex/async_scope.hpp>
+#include <unifex/on.hpp>
+#include <unifex/scheduler_concepts.hpp>
+#include <unifex/sync_wait.hpp>
+#include <unifex/static_thread_pool.hpp>
+#include <unifex/then.hpp>
+#include <unifex/when_all.hpp>
+#include <unifex/just.hpp>
 
 #include "sieve.hpp"
 #include "sieve_fun.hpp"
@@ -54,7 +59,7 @@ using namespace std::placeholders;
  * @param block_size how many primes to search for given a base set of primes
  */
 template <class bool_t>
-auto sieve_p2300_block(size_t n, size_t block_size) {
+auto sieve_unifex_block(size_t n, size_t block_size) {
   size_t sqrt_n = static_cast<size_t>(std::ceil(std::sqrt(n)));
 
   /* Generate base set of sqrt(n) primes to be used for subsequent sieving */
@@ -65,7 +70,12 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
   std::vector<std::shared_ptr<std::vector<size_t>>> prime_list(n / block_size + 2);
   prime_list[0] = std::make_shared<std::vector<size_t>>(base_primes);
 
-  example::static_thread_pool pool{std::thread::hardware_concurrency()};
+  namespace ex = unifex;
+
+  unifex::static_thread_pool pool{std::thread::hardware_concurrency()};
+  ex::async_scope scope;
+
+  
 
 
   /**
@@ -76,8 +86,8 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
   
   auto make_snd = [&]() {
 
-    ex::sender auto snd = 
-      ex::transfer_just(pool.get_scheduler()) |
+    ex::sender auto snd =
+      ex::just() |
       ex::then(l) |
       ex::then(std::bind(gen_range<bool_t>, _1, block_size, sqrt_n, n)) |
       ex::then(std::bind(range_sieve<bool_t>, _1, cref(base_primes))) |
@@ -87,14 +97,15 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
     return snd;
   };
 
-  // std::execution is lazy so this is completely synchronous
   std::vector<decltype(make_snd())> D;
   for (size_t i = 0; i < n / block_size + 1; ++i) {
-    D.emplace_back(make_snd());
+    scope.spawn_on(pool.get_scheduler(), make_snd());
   }
 
+  ex::sync_wait(scope.complete());
+
   for (auto&& d : D) {
-    std::this_thread::sync_wait(std::move(d));
+    ex::sync_wait(std::move(d));
   }
 
   return prime_list;
@@ -111,11 +122,11 @@ int main(int argc, char* argv[]) {
     block_size = std::stol(argv[2]);
   }
 
-  auto using_bool_p2300_block = timer_2(sieve_p2300_block<bool>, number, block_size * 1024);
-  auto using_char_p2300_block = timer_2(sieve_p2300_block<char>, number, block_size * 1024);
+  auto using_bool_unifex_block = timer_2(sieve_unifex_block<bool>, number, block_size * 1024);
+  auto using_char_unifex_block = timer_2(sieve_unifex_block<char>, number, block_size * 1024);
 
-  std::cout << "Time using bool p2300 block: " << duration_cast<std::chrono::milliseconds>(using_bool_p2300_block).count() << "\n";
-  std::cout << "Time using char p2300 block: " << duration_cast<std::chrono::milliseconds>(using_char_p2300_block).count() << "\n";
+  std::cout << "Time using bool unifex block: " << duration_cast<std::chrono::milliseconds>(using_bool_unifex_block).count() << "\n";
+  std::cout << "Time using char unifex block: " << duration_cast<std::chrono::milliseconds>(using_char_unifex_block).count() << "\n";
 
   return 0;
 }
