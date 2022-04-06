@@ -124,7 +124,8 @@ REPORTING   	= -Rpass=.*
 
 CXXFLAGS	= $(OPTS) $(LANG) $(PICKY) $(INCLUDES) $(DEFS) $(XDEFS) $(PTHREAD)
 
-SOURCES		= sieve_async_fun.cpp sieve_cc_fun.cpp sieve_direct_fun.cpp sieve_p2300_fun.cpp sieve_tbb_fun.cpp
+SOURCES		= sieve_async_fun.cpp sieve_cc_fun.cpp sieve_direct_fun.cpp sieve_p2300_fun.cpp \
+		  sieve_tbb_fun.cpp sieve_unifex_fun.cpp
 
 HEADERS		= $(SOURCES:.cpp=.hpp)
 OBJECTS		= $(SOURCES:.cpp=.o)
@@ -176,6 +177,7 @@ sieve_cc_fun.o: sieve_cc_fun.cpp sieve_fun.hpp sieve.hpp
 sieve_direct_fun.o: sieve_direct_fun.cpp sieve_fun.hpp sieve.hpp
 sieve_p2300_fun.o: sieve_p2300_fun.cpp sieve_fun.hpp sieve.hpp
 sieve_tbb_fun.o: sieve_tbb_fun.cpp sieve_fun.hpp sieve.hpp
+sieve_unifex_fun.o: sieve_unifex_fun.cpp sieve_fun.hpp sieve.hpp
 # DEPENDENCIES MUST END AT END OF FILE
 # IF YOU PUT STUFF HERE IT WILL GO AWAY
 # see make depend above
