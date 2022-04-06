@@ -27,7 +27,9 @@ auto sieve_seq(size_t n) {
 }
 ```
 
-For the parallel implementations in this repository, instead of processing the entire list of numbers, we first sequentially determine all the primes in $[2, \sqrt(n))$.  Using that initial set of primes, the algorithm finds primes in fixed-size blocks of numbers, delimited by $[\sqrt{n}+p\times B, \sqrt{n} + (p+1)\times B)$, where $B$ is a given block size and $p = 0, 1, \ldots , n/B$.
+For the parallel implementations in this repository, instead of processing the entire list of numbers, we first sequentially determine all the primes in 
+<img src="https://render.githubusercontent.com/render/math?math=[2, \sqrt(n))">.
+Using that initial set of primes, the algorithm finds primes in fixed-size blocks of numbers, delimited by $[\sqrt{n}+p\times B, \sqrt{n} + (p+1)\times B)$, where $B$ is a given block size and $p = 0, 1, \ldots , n/B$.
 The blocks can be processed independently and in parallel.
 
 
