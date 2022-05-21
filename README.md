@@ -57,7 +57,7 @@ The various implementations included here are based on the same block algorithm 
 - **async**: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
 - **cc**: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
 - **direct**: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
-- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.  **NB:** The p2300 implementation is evolving rapidly but does not yet have sufficient functionality to support this benchmark.  The sieve implementation is presently informational only (but compare to unifex).
+- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`. 
 - **tbb**: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
 - **unifex**: Uses Facebook's `libunifex` for concurrency and parallelism.  Algorithmic steps are chained together with `unifex::then` and `operator|`.
 
@@ -66,73 +66,52 @@ The associated driver programs are named `sieve_<framework>_fun.cpp`.  (The "fun
 
 ## Prerequisites
 
-### concurrencpp and std::execution
+### concurrencpp, tbb, and  std::execution
 
-Pull in the concurrencpp, libunifex, and wg21_p2300_std_execution submodules with git
+Pull in the concurrencpp, libunifex, tbb, and wg21_p2300_std_execution submodules with git
 
 ```bash
   $ git submodule update --init --recursive
 ```
 
+### Run cmake
 
-
-### concurrencpp 
-
-One of the implementations uses the concurrencpp library.  
-Get the latest version of concurrencpp as a submodule (the
-Makefile expects it to be installed as a subdirectory).
-
-Build the library:
 ```bash
-  $ cd concurrencpp
   $ mkdir build
   $ cd build
   $ cmake ..
-  $ make
 ```
 
-That should create a library `libconcurrencpp.a` in the `concurrencpp/build` subdirectory.
+Options available for this project in  CMakeLists.txt include
 
-### `std::execution`
-
-`std::execution` is header-only so it should "just work".  Double check Makefile macros if things are not found (see below).
-
-### TBB
-
-You will need a recent version of Intel Threading Building Blocks -- oneTBB.  The most
-straightforward way to access that is to install it with the appropriate package manager 
-(brew on MacOS, apt on Ubuntu, etc).
-
-### Makefile
-
-There are a few macros in the Makefile that you may need to set.
-
-`P2300` should point to the top level of the wg21_p2300_std_execution repository.
-This will be pulled in as a submodule, and the Makefile should already point to it.  But if you want to use a different location, you can update that.
-
-`UNIFEX` should point to the top level of the libunifex repository.
-This will be pulled in as a submodule, and the Makefile should already point to it.  But if you want to use a different location, you can update that.
-
-`TBBROOT` should point to the top level of your TBB installation.  On recent Linux this may be
-
-```make
-TBBROOT		:= /opt/intel/oneapi/tbb/2021.5.1
-```
-
-(which is what is set in the Makefile for Linux).  For recent MacOS this may be
-
-```make
-TBBROOT		:= $(HOMEBREW)/tbb/2021.5.0
-```
-
-where `HOMEBREW` may be one of `/opt/homebrew` or `/usr/local/Cellar`.
-
-(I realize that cmake can deal with much of this -- it's on the to-do list.)
+| Option              | Description                                        | Default |
+| --------------------|----------------------------------------------------|---------|
+| EC_BUILD_SIEVE      | Option to build sieve demo programs                | ON      |
+| EC_USE_CONCURRENCPP | Option whether or not to use concurrencpp library  | ON      |
+| EC_USE_WG21_P2003   | Option whether or not to use std execution library | ON      |
+| EC_USE_LIBUNIFEX    | Option whether or not to use libunifex             | ON      |
+| EC_USE_TBB          | Option whether or not to use TBB                   | ON      |
+| EC_USE_LOCAL_TBB    | Use TBB submodule (rather than system TBB)         | ON      |
 
 
 ### Compiler
 
-The concurrencpp library has only been tested with Apple clang, it does not appear to build with g++ (g++-11 attempted).  The other executables should build with g++-11.
+Important.  Several submodules (concurrencpp and wg1_21_p2003) in the project depend on C++20 and other features supported by clang compilers but not by GNU.  The examples all compile with Apple clang, but will not compile with g++.  cmake will disable those libraries if it detects g++.  I haven't tried out any clang compilers other than Apple clang, but since Apple clang is usually behind mainstream clang, I expect it will work (or will only require small changes).  Everything should work with taskflow and with TBB.
+
+
+Right now, cmake just picks the default compilation flags for the build level.  If you want a different set of flags, you will (for now) need to set them.  For example:
+
+    $ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_BUILD_FLAGS="-Ofast -march=native"
+
+By default, all of the demos will be built: kite, sieve, and eval.  You can turn those off with DAG_BUILD_EVAL, DAG_BUILD_KITE, or DAG_BUILD_SIEVE options.  The default is ON for all.
+
+### TBB
+
+A few of the executables depend on TBB.  Right now, TBB is included as a submodule.  You can either use a system install of TBB (use your favorite package manager to install), or use the submodule.  To use the submodule
+
+    $ cmake -DDAG_USE_LOCAL_TBB=ON
+
+The default is ON.
 
 ## Building and Running
 
@@ -141,12 +120,12 @@ The suite of executables can be built with
 ```bash
   $ make
 ```
-This will build all of the `sieve_<framework>_fun.exe`.  
+This will build all of the `sieve_<framework>_fun.exe` and put them in ./build/bin.
 
-The executables are invoked as
+From the build subdirectory, the executables can be invoked as:
 
 ```bash
-  $ ./sieve_<framework>_fun.exe [problem_size] [block_size]
+  $ ./bin/sieve_<framework>_fun.exe [problem_size] [block_size]
 ```
 where `problem_size` is an optional argument specifying the upper limit of numbers to search for primes and `block_size` is how many thousands of numbers to process together in a block.  Default `problem_size` is `100'000'000` and default `block_size` is `100`.  
 
@@ -163,7 +142,7 @@ A jupyter notebook is available in the benchmarks subdirectory
   $ jupyter notebook sieve_benchmark.ipynb
 ```
 
-This will build, run, and plot the benchmarks.  Assuming everything will build and run properly, it will take about 45 minutes to run through all the benchmarking.
+This will build, run, and plot the benchmarks.  Assuming everything will build and run properly, it will take about 10 minutes to run through all the benchmarking.
 
 
 ## Results
