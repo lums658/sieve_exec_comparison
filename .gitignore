@@ -30,3 +30,8 @@
 *.exe
 *.out
 *.app
+
+*.ipynb_checkpoints
+benchmarks/img/*
+benchmarks/log/*
+build/*
