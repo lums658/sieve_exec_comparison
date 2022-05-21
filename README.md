@@ -57,7 +57,7 @@ The various implementations included here are based on the same block algorithm 
 - **async**: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
 - **cc**: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
 - **direct**: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
-- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`. 
+- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.   **NB:** The p2300 implementation is evolving rapidly but does not yet have sufficient functionality to support this benchmark, so its results are not included.  The sieve implementation is presently informational only (but compare to unifex).
 - **tbb**: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
 - **unifex**: Uses Facebook's `libunifex` for concurrency and parallelism.  Algorithmic steps are chained together with `unifex::then` and `operator|`.
 
