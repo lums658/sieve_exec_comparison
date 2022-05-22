@@ -27,13 +27,19 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set(EC_USE_CONCURRENCPP OFF)
   set(EC_USE_WG21_P2003 OFF)
   message("")
-  message("*** Cannot use concurrencpp with GNU!!  Disabling! ***")
-  message("*** Cannot use wg21_p2003 with GNU!!  Disabling! ***")
+  message(WARNING "*** Cannot use concurrencpp with GNU!!  Disabling! ***")
+  message(WARNING "*** Cannot use wg21_p2003 with GNU!!  Disabling! ***")
+
+  if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL arm64)
+  set(TBBMALLOC_BUILD OFF)
+  message(WARNING "*** Cannot build tbbmalloc with GNU on arm64!!  Disabling! ***")
+  endif()
+
   message("")
 endif()
 
 
-if(EC_USE_LOCAL_TBB)
+if(EC_USE_TBB)
 option(TBB_TEST "" OFF)
 
 if(EC_USE_LOCAL_TBB)
