@@ -84,13 +84,13 @@ class input_body {
   std::atomic<size_t> p{0};
 
  public:
-  input_body()
-      : p{0} {
+  input_body() noexcept
+      : p{0} { 
   }
-  input_body(const input_body& rhs)
+  input_body(const input_body& rhs)  noexcept
       : p{rhs.p.load()} {
   }
-  size_t operator()() {
+  size_t operator()() noexcept {
     if (debug)
       std::cout << "input_body " << p << std::endl;
     return p++;
@@ -104,7 +104,7 @@ class input_body {
  * @return tuple with block number, bitmap range, and bitmap
  */
 template <class bool_t>
-auto gen_range(size_t p, size_t block_size, size_t sqrt_n, size_t n) {
+auto gen_range(size_t p, size_t block_size, size_t sqrt_n, size_t n) noexcept {
   if (debug)
     std::cout << "gen_range " << p << std::endl;
 
@@ -119,7 +119,7 @@ auto gen_range(size_t p, size_t block_size, size_t sqrt_n, size_t n) {
  * @return tuple with block number, bitmap range, and bitmap
  */
 template <class bool_t>
-auto range_sieve(const part_info<bool_t>& in, const std::vector<size_t>& base_primes) {
+auto range_sieve(const part_info<bool_t>& in, const std::vector<size_t>& base_primes) noexcept {
   auto [p, sieve_start, sieve_end, local_sieve] = in;
   if (debug)
     std::cout << "range_sieve " << p << std::endl;
@@ -144,7 +144,7 @@ auto range_sieve(const part_info<bool_t>& in, const std::vector<size_t>& base_pr
  * @return tuple with block number and shared_ptr to vector of primes
  */
 template <class bool_t>
-auto sieve_to_primes_part(const part_info<bool_t>& in) {
+auto sieve_to_primes_part(const part_info<bool_t>& in) noexcept {
   auto [p, sieve_start, sieve_end, local_sieve] = in;
   if (debug)
     std::cout << "sieve_to_primes_part " << p << std::endl;
@@ -162,7 +162,7 @@ auto sieve_to_primes_part(const part_info<bool_t>& in) {
  * Store list of primes in vector
  * @param tuple with block number and shared_ptr to vector of primes
  */
-auto output_body(const prime_info& in, std::vector<std::shared_ptr<std::vector<size_t>>>& prime_list) {
+auto output_body(const prime_info& in, std::vector<std::shared_ptr<std::vector<size_t>>>& prime_list) noexcept {
   auto [p, primes] = in;
   if (debug)
     std::cout << "output_body " << p << " / " << prime_list.size() << std::endl;

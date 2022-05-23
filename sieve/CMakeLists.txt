@@ -23,9 +23,10 @@ endif()
 if (EC_USE_LIBUNIFEX)
 add_executable       (sieve_unifex_fun.exe    sieve_unifex_fun.cpp)
 target_link_libraries(sieve_unifex_fun.exe    PUBLIC unifex)
+
+add_executable       (sieve_when_all_scope.exe   sieve_when_all_scope.cpp)
+target_link_libraries(sieve_when_all_scope.exe   PUBLIC unifex)
 endif()
 
-if (EC_USE_CCOTTER)
-add_executable       (sieve_ccotter_fun.exe   sieve_ccotter_fun.cpp)
-target_link_libraries(sieve_ccotter_fun.exe   PUBLIC unifex)
-endif()
+
+

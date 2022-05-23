@@ -19,8 +19,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 option(EC_BUILD_SIEVE "Option to build sieve demo programs." ON)
 option(EC_USE_CONCURRENCPP "Option whether or not to use concurrencpp library" ON)
 option(EC_USE_WG21_P2003 "Option whether or not to use std execution library" ON)
-option(EC_USE_CCOTTER "Option whether or not to use ccotter std execution library" ON)
-option(EC_USE_LIBUNIFEX "Option whether or not to use libunifex" ON)
+option(EC_USE_LIBUNIFEX "Option whether or not to use libunifex" OFF)
 option(EC_USE_TBB "Option whether or not to use TBB" ON)
 option(EC_USE_LOCAL_TBB "Use TBB submodule (rather than system TBB)" ON)
 
@@ -72,8 +71,4 @@ endif()
 
 if (EC_BUILD_SIEVE)
 add_subdirectory(sieve)
-endif()
-
-if (EC_USE_CCOTTER)
-add_subdirectory(external/ccotter)
 endif()

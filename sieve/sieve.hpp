@@ -39,7 +39,7 @@
 #include <vector>
 
 template <class bool_t>
-auto sieve_to_primes(std::vector<bool_t>& sieve) {
+auto sieve_to_primes(std::vector<bool_t>& sieve) noexcept {
   std::vector<size_t> primes;
 
   for (size_t i = 2; i < sieve.size(); ++i) {
@@ -51,7 +51,7 @@ auto sieve_to_primes(std::vector<bool_t>& sieve) {
 }
 
 template <class bool_t>
-auto sieve_to_primes(std::vector<bool_t>& sieve, std::vector<size_t>& base_primes, size_t sqrt_n) {
+auto sieve_to_primes(std::vector<bool_t>& sieve, std::vector<size_t>& base_primes, size_t sqrt_n) noexcept {
   std::vector<size_t> primes(base_primes);
 
   for (size_t i = sqrt_n; i < sieve.size(); ++i) {
@@ -63,7 +63,7 @@ auto sieve_to_primes(std::vector<bool_t>& sieve, std::vector<size_t>& base_prime
 }
 
 template <class bool_t>
-auto sieve_seq(size_t n) {
+auto sieve_seq(size_t n) noexcept {
   std::vector<bool_t> sieve(n, true);
 
   sieve[0] = sieve[1] = true;
