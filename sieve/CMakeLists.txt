@@ -9,7 +9,7 @@ add_executable       (sieve_direct_fun.exe    sieve_direct_fun.cpp)
 target_link_libraries(sieve_direct_fun.exe    PUBLIC)
 
 add_executable       (sieve_p2300_fun.exe     sieve_p2300_fun.cpp)
-target_link_libraries(sieve_p2300_fun.exe     PUBLIC kirkshoop)
+target_link_libraries(sieve_p2300_fun.exe     PUBLIC wg21_p2300_std_execution)
 
 add_executable       (sieve_tbb_fun.exe       sieve_tbb_fun.cpp)
 target_link_libraries(sieve_tbb_fun.exe       PUBLIC TBB::tbb)

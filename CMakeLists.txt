@@ -18,8 +18,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 option(EC_BUILD_SIEVE "Option to build sieve demo programs." ON)
 option(EC_USE_CONCURRENCPP "Option whether or not to use concurrencpp library" ON)
-option(EC_USE_WG21_P2003 "Option whether or not to use std execution library" OFF)
-option(EC_USE_KIRKSHOOP "Option whether or not to use kirkshoop std execution library" ON)
+option(EC_USE_WG21_P2003 "Option whether or not to use std execution library" ON)
 option(EC_USE_LIBUNIFEX "Option whether or not to use libunifex" ON)
 option(EC_USE_TBB "Option whether or not to use TBB" ON)
 option(EC_USE_LOCAL_TBB "Use TBB submodule (rather than system TBB)" ON)
@@ -68,7 +67,3 @@ if (EC_BUILD_SIEVE)
 add_subdirectory(sieve)
 endif()
 
-if (EC_USE_KIRKSHOOP) # a version of WG21_P2300
-add_library(kirkshoop INTERFACE)
-target_include_directories(kirkshoop INTERFACE external/kirkshoop/include)
-endif()
