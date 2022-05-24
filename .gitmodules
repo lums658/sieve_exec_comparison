@@ -10,3 +10,5 @@
 [submodule "wg21_p2300_std_execution"]
 	path = external/wg21_p2300_std_execution
 	url = https://github.com/lums658/wg21_p2300_std_execution.git
+	branch = async_scope
+
