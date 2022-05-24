@@ -3,7 +3,7 @@
 	url = https://github.com/David-Haim/concurrencpp.git
 [submodule "wg21_p2300_std_execution"]
 	path = external/wg21_p2300_std_execution
-	url = https://github.com/brycelelbach/wg21_p2300_std_execution.git
+	url = https://github.com/lums658/wg21_p2300_std_execution.git
 [submodule "libunifex"]
 	path = external/libunifex
 	url = https://github.com/facebookexperimental/libunifex.git
