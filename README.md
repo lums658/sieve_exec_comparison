@@ -57,7 +57,7 @@ The various implementations included here are based on the same block algorithm 
 - **async**: Uses `std::async` and `std::future` for concurrency and parallelism.  Algorithmic steps are chained together via `std::async()` and `std::future.get()`.
 - **cc**: Uses the `concurrencpp` library, based on C++20 coroutines for concurrency and parallelism.  Algorithmic steps are chained together via `co_return` and `co_await`
 - **direct**: Algorithmic steps are chained together via one function directly using the results of the previous one.  Function call chains are launched as separate `std::async` tasks.
-- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.   **NB:** The p2300 implementation is evolving rapidly but does not yet have sufficient functionality to support this benchmark, so its results are not included.  The sieve implementation is presently informational only (but compare to unifex).
+- **p2300**: Uses WG21 P2300 `std::execution` for concurrency and parallelism.  Algorithmic steps are chained together with `std::execution` and `operator|`.  The version used for this benchmark is a fork from Kirk Shoop's fork (which added support for async_scope).  The fork from the fork adds support for `spawn_on` which is necessary for parallel execution.
 - **tbb**: Uses Intel Threading Building Blocks (oneTBB) for concurrency and parallelism.  Algorithmic steps are embedded in `tbb::flow` task graph nodes.
 - **unifex**: Uses Facebook's `libunifex` for concurrency and parallelism.  Algorithmic steps are chained together with `unifex::then` and `operator|`.
 
@@ -73,6 +73,7 @@ Pull in the concurrencpp, libunifex, tbb, and wg21_p2300_std_execution submodule
 ```bash
   $ git submodule update --init --recursive
 ```
+This will clone concurrencpp, libunifex, oneTBB, and wg21_p2300_std_execution into the "external" subdirectory.  Note that  wg21_p2300_std_execution should be the "async_scope" branch (this should be done automatically with the submodule update).
 
 ### Run cmake
 
@@ -141,15 +142,14 @@ A jupyter notebook is available in the benchmarks subdirectory
   $ cd benchmarks
   $ jupyter notebook sieve_benchmark.ipynb
 ```
-
-This will build, run, and plot the benchmarks.  Assuming everything will build and run properly, it will take about 10 minutes to run through all the benchmarking.
+Executing the notebook will build, run, and plot the benchmarks.  Assuming everything will build and run properly, it will take about 10 minutes to run through all the benchmarking.  **NB:**  If you have run the notebook already, you should manually delete the subdirectories build, log, and img.  I decided against doing this in the notebook for safety reasons.
 
 
 ## Results
 
 ### Experimental Setup
 
-The following results were obtained on a Mac Mini M1, 2020 with 8 cores (4 performance, 4 efficiency).  The programs were compiled with Apple Clang version 13.0.0 for arm64-apple-darwin20.6.0.  Optimization flags used were "-Ofast -mcpu=apple-m1".  The TBB used was oneTBB (2021.5.0).  The concurrencpp version was v.0.1.4.  The std_execution version was P2532R0-46-gd40ce5e.
+The following results were obtained on a Mac Mini M1, 2020 with 8 cores (4 performance, 4 efficiency).  The programs were compiled with Apple Clang version 13.0.0 for arm64-apple-darwin20.6.0.  Optimization flags used were " -O3 -DNDEBUG -arch arm64".  The TBB used was oneTBB (2021.5.0).  The concurrencpp version was v.0.1.4.  The std_execution version was hash d219000, from the async_scope branch of https://github.com/lums658/wg21_p2300_std_execution.
 
 
 ### Primes less than 100'000'000
@@ -162,4 +162,4 @@ Shown from left to right are execution times for sieve implementations using con
 
 ![Primes in First 1000000000 Numbers](img/bar_plot__1000000000_.png)
 
-Shown from left to right are execution times for sieve implementations using concurrencpp, libunifex, TBB, direct function calls, and std::async.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
+Shown from left to right are execution times for sieve implementations using wg21_p2300_std_async, concurrencpp, libunifex, TBB, direct function calls, and std::async.  These results were obtained with a block size of 100k numbers.  Each bar shows mean and standard deviation over a total of 16 runs for each implementation.
