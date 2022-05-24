@@ -64,6 +64,8 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
   std::vector<std::shared_ptr<std::vector<size_t>>> prime_list(n / block_size + 2);
   prime_list[0] = std::make_shared<std::vector<size_t>>(base_primes);
 
+  example::static_thread_pool pool{std::thread::hardware_concurrency()};
+
   /**
    * Build pipeline
    */
@@ -83,7 +85,6 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
     return snd;
   };
 
-  example::static_thread_pool pool{std::thread::hardware_concurrency()};
 
 #if 0
   // std::execution is lazy so this is completely synchronous
@@ -104,7 +105,7 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
     }
 
   /* wait for tasks to finish */
-    ex::sync_wait(scope.complete());
+    std::this_thread::sync_wait(scope.complete());
 
 #endif
 

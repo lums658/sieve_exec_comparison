@@ -68,7 +68,7 @@ if (EC_BUILD_SIEVE)
 add_subdirectory(sieve)
 endif()
 
-if (EC_USE_KIRKSHOOP)
+if (EC_USE_KIRKSHOOP) # a version of WG21_P2300
 add_library(kirkshoop INTERFACE)
 target_include_directories(kirkshoop INTERFACE external/kirkshoop/include)
 endif()
