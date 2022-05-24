@@ -25,7 +25,7 @@ option(EC_USE_LOCAL_TBB "Use TBB submodule (rather than system TBB)" ON)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
   set(EC_USE_CONCURRENCPP OFF)
-#  set(EC_USE_WG21_P2003 OFF)
+  set(EC_USE_WG21_P2003 OFF)
   message("")
   message("*** Cannot use concurrencpp with GNU!!  Disabling! ***")
   message("*** Cannot use wg21_p2003 with GNU!!  Disabling! ***")
