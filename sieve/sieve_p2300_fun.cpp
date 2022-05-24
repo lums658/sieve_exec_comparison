@@ -96,15 +96,15 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
     std::this_thread::sync_wait(std::move(d));
   }
 #else
-  ex::async_scope scope;
+    ex::async_scope scope;
 
   /* launch tasks on async_scope */
-  for (size_t i = 0; i < n / block_size + 1; ++i) {
-    scope.spawn_on(pool.get_scheduler(), make_snd());
-  }
+    for (size_t i = 0; i < n / block_size + 1; ++i) {
+      scope.spawn_on(pool.get_scheduler(), make_snd());
+    }
 
   /* wait for tasks to finish */
-  ex::sync_wait(scope.complete());
+    ex::sync_wait(scope.complete());
 
 #endif
 
