@@ -7,6 +7,6 @@
 [submodule "libunifex"]
 	path = external/libunifex
 	url = https://github.com/facebookexperimental/libunifex.git
-[submodule "external/oneTBB"]
+[submodule "oneTBB"]
 	path = external/oneTBB
 	url = https://github.com/oneapi-src/oneTBB.git
