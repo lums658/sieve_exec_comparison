@@ -37,6 +37,8 @@
 
 #include "../examples/schedulers/static_thread_pool.hpp"
 
+#include "async_scope.hpp"
+
 using namespace std::execution;
 namespace ex = std::execution;
 
@@ -97,15 +99,15 @@ auto sieve_p2300_block(size_t n, size_t block_size) {
     std::this_thread::sync_wait(std::move(d));
   }
 #else
-    ex::async_scope scope;
+    ex::P2519::async_scope scope;
 
   /* launch tasks on async_scope */
     for (size_t i = 0; i < n / block_size + 1; ++i) {
-      scope.spawn_on(pool.get_scheduler(), make_snd());
+      scope.spawn(ex::on(pool.get_scheduler(), make_snd()));
     }
 
   /* wait for tasks to finish */
-    std::this_thread::sync_wait(scope.complete());
+    std::this_thread::sync_wait(scope.empty());
 
 #endif
 
