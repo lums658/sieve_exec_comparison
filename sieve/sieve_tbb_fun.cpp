@@ -31,6 +31,8 @@
  */
 
 #include <tbb/tbb.h>
+#include <tbb/global_control.h>
+
 
 #include <chrono>
 #include <cmath>
@@ -122,9 +124,16 @@ int main(int argc, char* argv[]) {
     width = std::stol(argv[3]);
   }
 
-  auto using_bool_tbb_block = timer_2(sieve_tbb_block<bool>, number, block_size * 1024, width);
-  auto using_char_tbb_block = timer_2(sieve_tbb_block<char>, number, block_size * 1024, width);
+  oneapi::tbb::global_control global_limit(oneapi::tbb::global_control::max_allowed_parallelism, width);
 
-  std::cout << "Time using bool tbb block: " << duration_cast<std::chrono::milliseconds>(using_bool_tbb_block).count() << "\n";
-  std::cout << "Time using char tbb block: " << duration_cast<std::chrono::milliseconds>(using_char_tbb_block).count() << "\n";
+    //  tbb::global_control(tbb::global_control::max_allowed_parallelism, width);
+
+  //  auto using_bool_tbb_block = timer_2(sieve_tbb_block<bool>, number, block_size * 1024, width);
+  auto using_char_tbb_block_1 = timer_2(sieve_tbb_block<char>, number, block_size * 1024, width);
+
+  //  std::cout << "Time using bool tbb block: " << duration_cast<std::chrono::milliseconds>(using_bool_tbb_block).count() << "\n";
+  std::cout << "Time using char tbb block: " << duration_cast<std::chrono::milliseconds>(using_char_tbb_block_1).count() << "\n";
+
+  auto using_char_tbb_block_2 = timer_2(sieve_tbb_block<char>, number, block_size * 1024, width);
+  std::cout << "Time using char tbb block: " << duration_cast<std::chrono::milliseconds>(using_char_tbb_block_2).count() << "\n";
 }

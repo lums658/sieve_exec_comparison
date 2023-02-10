@@ -150,6 +150,7 @@ auto sieve_to_primes_part(const part_info<bool_t>& in) {
     std::cout << "sieve_to_primes_part " << p << std::endl;
 
   std::vector<size_t> primes;
+  primes.reserve(local_sieve->size());
   for (size_t i = 0; i < local_sieve->size(); ++i) {
     if ((*local_sieve)[i]) {
       primes.push_back(i + sieve_start);
